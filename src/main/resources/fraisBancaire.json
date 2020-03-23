@@ -9,10 +9,43 @@
   },
   {
     "name": "frais bancaire x2",
-    "priority": 1,
+    "priority": 2,
     "condition": "true",
     "actions": [
       "FB_CALCULATED_X2 = FB_CALCULATED * 2"
+    ]
+  },
+  {
+    "name": "frais bancaire 3",
+    "priority": 3,
+    "condition": "true",
+    "actions": [
+      "FB_CALCULATED_3 = TX_FB * PRX_ACHAT"
+    ]
+  },
+  {
+    "name": "TEST condition unique",
+    "priority": 3,
+    "condition": "TEST == \"OK\"",
+    "actions": [
+      "System.out.println(\"OK\");"
+    ]
+  },
+  {
+    "name": "TEST condition &&",
+    "priority": 3,
+    "condition": "(TEST == \"OK\" and TEST2 == \"OK\")",
+    "actions": [
+      "System.out.println(\"OK &&\");"
+    ]
+  },
+
+  {
+    "name": "TEST condition ||",
+    "priority": 3,
+    "condition": "TEST == \"OK\" or TEST2 == \"OK\"",
+    "actions": [
+      "System.out.println(\"OK ||\");"
     ]
   }
 ]

@@ -69,10 +69,17 @@ public class Main {
         System.out.println("JSON :");
         System.out.println(facts.get("FB_CALCULATED").toString());
         //fbRules.execute(facts);
+
         rulesEngine.fire(stringRules, facts);
         System.out.println("JSON String:");
         System.out.println(facts.get("FB_CALCULATED").toString());
 
         System.out.println(facts.get("FB_CALCULATED_X2").toString());
+        System.out.println(facts.get("FB_CALCULATED_3").toString());
+
+        facts.put("TEST", "OK");
+        facts.put("TEST2", "OK");
+        rulesEngine.fire(fbRules, facts);
+
     }
 }
