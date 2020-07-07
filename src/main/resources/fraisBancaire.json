@@ -1,7 +1,7 @@
 [
   {
     "name": "frais bancaire rule",
-    "priority": 2,
+    "priority": 1,
     "condition": "true",
     "actions": [
       "FB_CALCULATED = (TX_FB / 100) * PRX_ACHAT"
@@ -9,15 +9,15 @@
   },
   {
     "name": "frais bancaire x2",
-    "priority": 2,
-    "condition": "true",
+    "priority": 1,
+    "condition": "FB_CALCULATED >= 5",
     "actions": [
       "FB_CALCULATED_X2 = FB_CALCULATED * 2"
     ]
   },
   {
     "name": "frais bancaire 3",
-    "priority": 3,
+    "priority": 2,
     "condition": "true",
     "actions": [
       "FB_CALCULATED_3 = TX_FB * PRX_ACHAT"
@@ -26,7 +26,7 @@
   {
     "name": "TEST condition unique",
     "priority": 3,
-    "condition": "TEST == \"OK\"",
+    "condition": "TEST == 'OK'",
     "actions": [
       "System.out.println(\"OK\");"
     ]

@@ -1,8 +1,13 @@
-import org.jeasy.rules.api.*;
+import org.jeasy.rules.api.Condition;
+import org.jeasy.rules.api.Facts;
+import org.jeasy.rules.api.Rule;
+import org.jeasy.rules.api.Rules;
+import org.jeasy.rules.api.RulesEngine;
 import org.jeasy.rules.core.DefaultRulesEngine;
 import org.jeasy.rules.core.RuleBuilder;
+import org.jeasy.rules.mvel.MVELAction;
 import org.jeasy.rules.mvel.MVELRuleFactory;
-import org.jeasy.rules.support.JsonRuleDefinitionReader;
+import org.jeasy.rules.support.reader.JsonRuleDefinitionReader;
 
 import java.io.FileReader;
 import java.io.StringReader;
@@ -16,7 +21,7 @@ public class Main {
             "    \"priority\": 2,\n" +
             "    \"condition\": \"true\",\n" +
             "    \"actions\": [\n" +
-            "      \"FB_CALCULATED = (TX_FB / 100) * PRX_ACHAT;\"\n" +
+            "      \"FB_CALCULATED_SR = (TX_FB / 100) * PRX_ACHAT;\"\n" +
             "    ]\n" +
             "  },\n" +
             "  {\n" +
@@ -25,7 +30,7 @@ public class Main {
             "    \"priority\": 2,\n" +
             "    \"condition\": \"true\",\n" +
             "    \"actions\": [\n" +
-            "      \"FB_CALCULATED_X2 = FB_CALCULATED * 2\"\n" +
+            "      \"FB_CALCULATED_X2_SR = FB_CALCULATED_SR * 2\"\n" +
             "    ]\n" +
             "  }\n" +
             "]\n";
@@ -33,31 +38,27 @@ public class Main {
     public static void main(String[] args) throws Exception {
         // define facts
         Facts facts = new Facts();
-        facts.put("TX_FB", 2);
-        facts.put("PRX_ACHAT", Double.valueOf("1.56"));
+        facts.put("TX_FB", "2");
+        facts.put("PRX_ACHAT", "156");
 
         // define rules
         Rule fraisBancaire =new RuleBuilder().name("fraisBancaire")
                 .when(Condition.TRUE)
-                .then(factsIn -> {
-                Double txFraixBanque = Double.valueOf(factsIn.get("TX_FB").toString());
-                Double prixAchat = Double.valueOf(factsIn.get("PRX_ACHAT").toString());
-
-                Double result = (txFraixBanque / 100) * prixAchat;
-
-                factsIn.put("result", result);
-
-        }).build();
+                .then(new MVELAction("FB = 2 * 3")).build();
+        Rule fraisBancaire2 =new RuleBuilder().name("fraisBancaire2")
+                .when(Condition.TRUE)
+                .then(new MVELAction("FB2 = FB * 2")).build();
         Rules rules = new Rules();
         rules.register(fraisBancaire);
+        rules.register(fraisBancaire2);
 
         // fire rules on known facts
         RulesEngine rulesEngine = new DefaultRulesEngine();
         rulesEngine.fire(rules, facts);
 
-
          System.out.println("DSL :");
-         System.out.println(facts.get("result").toString());
+         System.out.println("FB : " + facts.get("FB"));
+         System.out.println("FB2 : " + facts.get("FB2"));
 
         MVELRuleFactory ruleFactory = new MVELRuleFactory(new JsonRuleDefinitionReader());
         Rules fbRules = ruleFactory.createRules(new FileReader("src/main/resources/fraisBancaire.json"));
@@ -68,6 +69,7 @@ public class Main {
         rulesEngine.fire(fbRules, facts);
         System.out.println("JSON :");
         System.out.println(facts.get("FB_CALCULATED").toString());
+        System.out.println(facts.get("FB_CALCULATED_X2").toString());
         //fbRules.execute(facts);
 
         rulesEngine.fire(stringRules, facts);
